@@ -11,7 +11,6 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -19,4 +18,38 @@ jobs:
     - name: Build
       run: cargo build --verbose
     - name: Run tests
+      run: cargo test --verbose    
+  
+  build_release:
+
+    runs-on: ubuntu-latest
+    permissions: write-all
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
       run: cargo test --verbose
+    - name: Release
+      run: cargo build --release
+    - name: release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        release_name: ${{ steps.version.outputs.version }}
+        tag_name: 0.1.0
+        #body_path: CHANGELOG.md
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: upload linux artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:        
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./target/release/palindrome
+        asset_name: palindrome
+        asset_content_type: application/octet-stream
