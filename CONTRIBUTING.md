@@ -1,1 +1,1 @@
-Follow the Rust's standard coding convention/recommandations
+Follow the Rust's standard coding convention/recommendations
